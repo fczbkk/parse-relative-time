@@ -1,6 +1,6 @@
 {
   "name": "parse-relative-time",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Parse simple relative time in human readable format to milliseconds.",
   "repository": {
     "type": "git",
