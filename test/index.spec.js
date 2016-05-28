@@ -25,7 +25,7 @@ describe('parseRelativeTime', function () {
   });
 
   it('should support singular and plural', function () {
-    expect(parseRelativeTime('1 second')).toEqual(parseRelativeTime('1 second'));
+    expect(parseRelativeTime('1 day')).toEqual(parseRelativeTime('1 days'));
     expect(parseRelativeTime('10 day')).toEqual(parseRelativeTime('10 days'));
   });
 
