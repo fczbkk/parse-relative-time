@@ -36,10 +36,12 @@ describe('parseRelativeTime', function () {
     expect(parseRelativeTime('- 1 second')).toEqual(-1000);
   });
 
-  it('should support operator', function () {
+  it('should ignore whitespace', function () {
     expect(parseRelativeTime('   1 second')).toEqual(1000);
     expect(parseRelativeTime('1 second   ')).toEqual(1000);
+    expect(parseRelativeTime('1   second')).toEqual(1000);
     expect(parseRelativeTime('   1 second   ')).toEqual(1000);
+    expect(parseRelativeTime('   1   second   ')).toEqual(1000);
   });
 
   it('should return `null` on invalid input', function () {
