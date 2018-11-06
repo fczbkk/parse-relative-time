@@ -16,6 +16,9 @@ Parse simple relative time in human readable format to milliseconds.
 
 ```javascript
 parseRelativeTime('2 days');  // --> 172800000
+parseRelativeTime('-2 days');
+parseRelativeTime('in 2 days');
+parseRelativeTime('2 days ago');
 ```
 
 Returns **(null | [number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number))** 

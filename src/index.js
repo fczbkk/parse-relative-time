@@ -111,6 +111,9 @@ function getMultiplier ({operator_keyword, post_keyword}) {
  * @returns {null | number}
  * @example
  * parseRelativeTime('2 days');  // --> 172800000
+ * parseRelativeTime('-2 days');
+ * parseRelativeTime('in 2 days');
+ * parseRelativeTime('2 days ago');
  */
 export default function (input) {
   const parsed_input = parseInput(input);
