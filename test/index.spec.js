@@ -53,4 +53,20 @@ describe('parseRelativeTime', function () {
     expect(parseRelativeTime('1 second day')).toEqual(null);
   });
 
+  it('should treat "in" as positive operator', function () {
+    expect(parseRelativeTime('in 1 second'))
+      .toEqual(parseRelativeTime('+1 second'));
+  });
+
+  it('should treat "ago" as negative operator', function () {
+    expect(parseRelativeTime('1 second ago'))
+      .toEqual(parseRelativeTime('-1 second'));
+  });
+
+  it('should not allow to mix keywords and operators', function () {
+    expect(parseRelativeTime('in +1 second')).toEqual(null);
+    expect(parseRelativeTime('-1 seconds ago')).toEqual(null);
+    expect(parseRelativeTime('in 1 seconds ago')).toEqual(null);
+  });
+
 });

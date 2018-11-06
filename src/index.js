@@ -1,3 +1,17 @@
+/**
+ * @typedef {'+' | '-' | ''} operator_keyword
+ */
+
+/**
+ * @typedef {'ago' | ''} post_keyword
+ */
+
+/**
+ * @typedef {object} parsed_input
+ * @property {number} value
+ * @property {string} unit
+ */
+
 const relative_time_units = {
   second: 1000,
   minute: 1000 * 60,
@@ -13,8 +27,10 @@ const units = Object.keys(relative_time_units).join('|');
 const re_content = ''
   // any whitespace
   + '^\\s*'
-  // (optional) operator, positive or negative sign
-  + '(\\+|\\-)*'
+  // pre-keyword (e.g. "in")
+  + '(in)*'
+  // (optional) operator-keyword, positive or negative sign
+  + '(\\+|\\-|)*'
   // any whitespace
   + '\\s*'
   // (required) value
@@ -26,6 +42,10 @@ const re_content = ''
   // plural
   + 's*'
   // any whitespace
+  + '\\s*'
+  // post-keyword (e.g. "ago")
+  + '(ago)*'
+  // any whitespace
   + '\\s*$';
 
 const re = new RegExp(re_content);
@@ -33,24 +53,24 @@ const re = new RegExp(re_content);
 /**
  * Parses value and unit from human-readable relative time.
  * @param {string} input
- * @return {{value: number, unit: string} | null} Returns `null` if input can not be parsed.
+ * @return {parsed_input | null} Returns `null` if input can not be parsed.
  */
 function parseInput (input) {
   const match = re.exec(input);
 
   if (match !== null) {
-    /* eslint-disable no-unused-vars */
-    const [, operator, value, unit] = match;
-    /* eslint-enable no-unused-vars */
+    const [, pre_keyword, operator_keyword, value, unit, post_keyword] = match;
 
-    let sanitized_value = parseInt(value, 10);
-
-    if (operator === '-') {
-      sanitized_value = sanitized_value * -1;
+    if (
+      (pre_keyword && post_keyword)
+      || (pre_keyword && operator_keyword)
+      || (post_keyword && operator_keyword)
+    ) {
+      return null;
     }
 
     return {
-      value: sanitized_value,
+      value: sanitizeValue({value, operator_keyword, post_keyword}),
       unit: unit
     };
 
@@ -60,9 +80,34 @@ function parseInput (input) {
 }
 
 /**
+ * Makes sure that the value is a number.
+ * @param {object} config
+ * @param {string} config.value
+ * @param {operator_keyword} [config.operator_keyword]
+ * @param {post_keyword} [config.post_keyword]
+ * @return {number}
+ */
+function sanitizeValue ({value, operator_keyword, post_keyword}) {
+  return parseInt(value, 10) * getMultiplier({operator_keyword, post_keyword});
+}
+
+/**
+ * Gets multiplier based on whether the value is in past or future.
+ * @param {object} config
+ * @param {operator_keyword} config.operator_keyword
+ * @param {post_keyword} config.post_keyword
+ * @return {number}
+ */
+function getMultiplier ({operator_keyword, post_keyword}) {
+  return (operator_keyword === '-' || post_keyword === 'ago')
+    ? -1
+    : 1;
+}
+
+/**
  * Parse simple relative time in human readable format to milliseconds.
  * @name parseRelativeTime
- * @param {string} input Human readable format of relative time
+ * @param {string} input - Human readable format of relative time
  * @returns {null | number}
  * @example
  * parseRelativeTime('2 days');  // --> 172800000
